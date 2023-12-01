@@ -3,6 +3,7 @@
 
 (import-macros {: incf : decf} :sample-macros)
 (local Concord (require :lib.concord))
+(local Camera (require :lib.camera))
 
 ;;; Components
 (Concord.component
@@ -23,7 +24,7 @@
  :velocity
  (fn [c x y]
    (set c.x (or x 0))
-   (set c.y (or x 0))))
+   (set c.y (or y 0))))
 
 (Concord.component :drawable)
 (Concord.component
@@ -50,11 +51,27 @@
         (down? :a) (decf player.position.x (* speed dt))
         (down? :d) (incf player.position.x (* speed dt)))))
 
+(local sys-cam-move (Concord.system {:pool [:player]}))
+(fn sys-cam-move.update [self dt]
+  "Set cam around player"
+  (let [player (. self.pool 1)
+        px player.position.x
+        py player.position.y
+        world (self:getWorld)
+        camera (world:getResource :camera)
+        (cx cy) (camera:position)
+        dx (- px cx)
+        dy (- py cy)]
+    (camera:move dx dy)))
+
 ;; Draw
 (local sys-draw (Concord.system {:pool [:position :drawable]}))
 (fn sys-draw.draw [self]
-  (each [_ e (ipairs self.pool)]
-    (love.graphics.circle :fill e.position.x e.position.y 5)))
+  (let [camera (: (self:getWorld) :getResource :camera)]
+    (camera:attach)
+    (each [_ e (ipairs self.pool)]
+      (love.graphics.circle :fill e.position.x e.position.y 5))
+    (camera:detach)))
 
 ;;; Game state
 {:world (Concord.world)
@@ -66,18 +83,23 @@
            (world:addSystems
             sys-move
             sys-player-input
+            sys-cam-move
             sys-draw)
 
            ;; Add Entities
            (-> (Concord.entity world)
                (: :give :position 100 100)
-               (: :give :velocity 100 0)
+               (: :give :velocity 100 50)
                (: :give :drawable))
 
            (-> (Concord.entity world)
                (: :give :position 50 50)
                (: :give :drawable)
                (: :give :player))
+
+           (local camera (Camera.new 50 50))
+
+           (world:setResource :camera camera)
            ))
 
  :update (fn update [self dt] (self.world:emit "update" dt))
