@@ -7,51 +7,14 @@
 
 
 ;; Utilities
-(fn gen-anim [quad-map & frames]
-  (icollect [_ v (ipairs frames)]
-    {:elapsed 0 :frame v :quad (. quad-map v)}))
-
-
 (fn set-animation-state [animation new-state]
   (when (not= new-state animation.state)
     (set animation.state new-state)
     (set animation.frame 1)))
 
-
-(fn quad-map [image rows cols]
-  (local map {})
-  (print (.. "qmap w/ " rows " " cols " " (length map)))
-  (let [newQuad love.graphics.newQuad
-        (imgw imgh) (image:getDimensions)
-        sw (/ imgw cols)
-        sh (/ imgh rows)]
-    (for [y 0 (- rows 1)]
-      (for [x 0 (- cols 1)]
-        (let [index (+ (length map) 1)
-              sx (* x sw)
-              sy (* y sh)]
-          (print (.. "make quad " index " " x "|" sx " " y "|" sy " " sw " " sh " " imgw " " imgh))
-          (tset map (+ (length map) 1) (newQuad sx sy sw sh imgw imgh))))))
-  map)
-
-
 (fn inc-wrap [index wrap]
   "Returns index incremented by 1 wrapped back to 1 at wrap"
   (+ (% index wrap) 1))
-
-
-;; Player animation stuff
-(local player-sprite (love.graphics.newImage "assets/NESW_gingerbread_man.png"))
-(local player-quads (quad-map player-sprite 4 3))
-;; (each [i v (ipairs player-quads)] (print (.. i "|" (v:getTextureDimensions))))
-(local player-walk-animation
-       {
-        :north (gen-anim player-quads 1 2 3 2)
-        :east  (gen-anim player-quads 4 5 6 5)
-        :south (gen-anim player-quads 7 8 9 8)
-        :west  (gen-anim player-quads 10 11 12 11)
-        :idle [{:elapsed 0 :frame 8 :quad (. player-quads 8)}]
-        })
 
 ;;; Components
 (Concord.component
@@ -85,6 +48,11 @@
 
 
 (Concord.component :drawable)
+
+(Concord.component
+ :resource
+ (fn [c kind]
+   (set c.kind kind)))
 
 
 (Concord.component
@@ -153,12 +121,11 @@
       (when (> frame.elapsed e.animation.speed)
         (let [new-frame (inc-wrap e.animation.frame (length frames))]
           (set e.animation.frame new-frame))
-        (set frame.elapsed 0))
-      )))
+        (set frame.elapsed 0)))))
 
 (fn sys-animation.draw [self]
   (let [camera (: (self:getWorld) :getResource :camera)
-        gprint love.graphics.print]
+        gdraw love.graphics.draw]
     (camera:attach)
     (each [_ e (ipairs self.pool)]
       (let [state e.animation.state
@@ -166,11 +133,7 @@
             index (. e.animation.graph state frame :frame)
             quad (. e.animation.graph state frame :quad)
             image e.animation.image]
-        (love.graphics.draw image quad e.position.x e.position.y)
-        (gprint (.. state "|" frame "=>" index)
-                e.position.x e.position.y
-                0 1 1
-                25 25)))
+        (gdraw image quad e.position.x e.position.y)))
     (camera:detach)))
 
 ;;; Game state
@@ -178,13 +141,16 @@
 
  ;; Callbacks
  :init (fn init [self]
-         (let [world self.world]
+         (let [world self.world
+               player (require :player)]
            (world:addSystems
             sys-move
             sys-player-input
             sys-cam-move
             sys-draw
             sys-animation)
+
+           ;; (local player (require :player))
 
            (-> (Concord.entity world)
                (: :give :drawable)
@@ -195,7 +161,7 @@
 
            (-> (Concord.entity world)
                (: :give :position 50 50)
-               (: :give :animation :south 1 0.25 player-walk-animation player-sprite)
+               (: :give :animation :south 1 0.25 player.animation player.sprite-sheet)
                (: :give :player))
 
            (local camera (Camera.new 50 50))
