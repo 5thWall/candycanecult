@@ -2,6 +2,8 @@
 ;;;; Entry for the Weak Sauce Dec '23 Jam
 
 (import-macros {: incf : decf} :sample-macros)
+
+
 (local Concord (require :lib.concord))
 (local Camera (require :lib.camera))
 
@@ -25,13 +27,15 @@
             S.draw
             S.animation)
 
-           ;; (local player (require :player))
+           (local player (require :player))
+           (local gumdrop
+                  (love.graphics.newImage "assets/gumdrop.png"))
 
            (-> (Concord.entity world)
-               (: :give :drawable)
+               (: :give :drawable gumdrop)
                (: :give :position 25 50))
            (-> (Concord.entity world)
-               (: :give :drawable)
+               (: :give :drawable gumdrop)
                (: :give :position 125 100))
 
            (-> (Concord.entity world)

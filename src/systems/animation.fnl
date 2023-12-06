@@ -34,7 +34,7 @@
             index (. e.animation.graph state frame :frame)
             quad (. e.animation.graph state frame :quad)
             image e.animation.image]
-        (gdraw image quad e.position.x e.position.y)))
+        (gdraw image quad e.position.x e.position.y 0 1 1 24 32)))
     (camera:detach)))
 
 
