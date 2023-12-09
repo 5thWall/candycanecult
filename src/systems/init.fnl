@@ -4,4 +4,5 @@
  :camera-movement (require (.. ... ".camera-movement"))
  :draw (require (.. ... ".draw"))
  :animation (require (.. ... ".animation"))
+ :spawn-resources (require (.. ... ".spawn-resources"))
  }
