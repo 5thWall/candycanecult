@@ -19,8 +19,9 @@
     {:elapsed 0 :frame v :quad (. quad-map v)}))
 
 
-(local sprite (love.graphics.newImage "assets/NESW_gingerbread_man.png"))
-(local quads (quad-map sprite 4 3))
+(local sprite-sheet (love.graphics.newImage "assets/NESW_gingerbread_man.png"))
+(local quads (quad-map sprite-sheet 4 3))
+(local (width height) (sprite-sheet:getDimensions))
 (local walk-animation
        {
         :north (gen-anim quads 1 2 3 2)
@@ -30,6 +31,6 @@
         :idle  [{:elapsed 0 :frame 8 :quad (. quads 8)}]
         })
 
-
-{:sprite-sheet sprite
- :animation walk-animation}
+{:sprite-sheet sprite-sheet
+ :animation walk-animation
+ : width : height}

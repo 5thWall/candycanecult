@@ -18,26 +18,29 @@
 
  ;; Callbacks
  :init (fn init [self]
+         (love.mouse.setGrabbed true)
          (let [world self.world
                player (require :player)]
            (world:addSystems
             S.movement
             S.player-input
+            S.player-select
             S.spawn-resources
             S.camera-movement
             S.draw
+            S.draw-look
             S.animation)
 
            (local player (require :player))
            (local gumdrop
                   (love.graphics.newImage "assets/gumdrop.png"))
 
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position 25 50))
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position 125 100))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position 25 50))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position 125 100))
 
            (-> (Concord.entity world)
                (: :give :resource-spawner :gumdrop))
@@ -49,6 +52,9 @@
 
            (local camera (Camera.new 0 0))
 
+           (local shaders {:outline (love.graphics.newShader "shaders/outline.glsl")})
+
+           (world:setResource :shaders shaders)
            (world:setResource :camera camera)
            (world:setResource :res-img-map { :gumdrop gumdrop })
            ))
@@ -62,4 +68,8 @@
 
  :keypressed (fn keypressed [self key _scancode _repeat?]
                (if (= key :escape) (love.event.quit 0))
-               )}
+               )
+
+ :mousemoved (fn mousemoved [self x y dx dy touch?]
+               (self.world:emit "mousemoved" x y dx dy touch?))
+ }
