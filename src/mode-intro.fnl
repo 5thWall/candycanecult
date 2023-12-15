@@ -24,7 +24,7 @@
            (world:addSystems
             S.movement
             S.player-input
-            S.player-select
+            S.select-thing
             S.spawn-resources
             S.camera-movement
             S.draw
@@ -36,14 +36,19 @@
                   (love.graphics.newImage "assets/gumdrop.png"))
 
            (-> (Concord.entity world)
-               (: :give :drawable gumdrop)
-               (: :give :position 25 50))
+               (: :give :drawable)
+               (: :give :position 0 0))
            (-> (Concord.entity world)
                (: :give :drawable gumdrop)
-               (: :give :position 125 100))
+               (: :give :position 25 50)
+               (: :give :useable 64 64))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position 125 100)
+               (: :give :useable 64 64))
 
            (-> (Concord.entity world)
-               (: :give :resource-spawner :gumdrop))
+               (: :give :resource-spawner :gumdrop 100 0 0 500 500 1 5))
 
            (-> (Concord.entity world)
                (: :give :position 0 0)

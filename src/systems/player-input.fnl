@@ -1,5 +1,6 @@
 (import-macros {: incf : decf} :sample-macros)
 (local Concord (require :lib.concord))
+(local vec (require :lib.vector-light))
 
 
 (fn set-animation-state [animation new-state]
@@ -25,6 +26,16 @@
         (down? :d) (do (set-animation-state animation :east)
                        (incf player.position.x (* speed dt)))
         (set-animation-state animation :idle))))
+
+
+(fn player-input.mousemoved [self mx my _dx _dy _touch?]
+  (let [camera (: (self:getWorld) :getResource :camera)
+        player (. self.pool 1)
+        px player.position.x
+        py player.position.y
+        theta (vec.toPolar
+               (vec.sub mx my (camera:cameraCoords px py)))]
+    (set player.player.look-angle theta)))
 
 
 player-input

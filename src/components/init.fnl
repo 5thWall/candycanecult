@@ -6,4 +6,5 @@
  :drawable (require (.. ... ".drawable"))
  :resource (require (.. ... ".resource"))
  :resource-spawner (require (.. ... ".resource-spawner"))
+ :useable (require (.. ... ".useable"))
  }

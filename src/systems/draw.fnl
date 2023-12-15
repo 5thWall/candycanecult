@@ -28,9 +28,17 @@
 
 
 (fn draw.draw [self]
-  (let [camera (: (self:getWorld) :getResource :camera)]
+  (let [world (self:getWorld)
+        camera (world:getResource :camera)
+        shader (. (world:getResource :shaders) :outline)]
     (camera:attach)
-    (each [_ e (ipairs self.pool)] (draw-entity e))
+    (each [_ e (ipairs self.pool)]
+      (draw-entity e)
+      (when (?. e :useable :selected)
+        (love.graphics.setShader shader)
+        (shader:send "stepSize" [(/ 1 e.useable.width) (/ 1 e.useable.height)])
+        (draw-entity e)
+        (love.graphics.setShader)))
     (camera:detach)))
 
 
