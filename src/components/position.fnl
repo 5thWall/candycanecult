@@ -4,4 +4,4 @@
  :position
  (fn [c x y]
    (set c.x (or x 0))
-   (set c.y (or x 0))))
+   (set c.y (or y 0))))
