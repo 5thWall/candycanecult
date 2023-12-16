@@ -25,7 +25,9 @@
 
 
 (fn animation.draw [self]
-  (let [camera (: (self:getWorld) :getResource :camera)
+  (let [world (self:getWorld)
+        camera (world:getResource :camera)
+        outline (. (world:getResource :shaders) :outline)
         gdraw love.graphics.draw]
     (camera:attach)
     (each [_ e (ipairs self.pool)]
