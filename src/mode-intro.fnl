@@ -2,14 +2,35 @@
 ;;;; Entry for the Weak Sauce Dec '23 Jam
 
 (import-macros {: incf : decf} :sample-macros)
-
-
 (local Concord (require :lib.concord))
 (local Camera (require :lib.camera))
-
-
 (local C (require :components))
 (local S (require :systems))
+
+(local new-image love.graphics.newImage)
+(local nrand love.math.randomNormal)
+
+(local max-greebles 500)
+(local world-radius 2000)
+
+
+(fn test-resources [world image]
+  (-> (Concord.entity world)
+      (: :give :drawable image)
+      (: :give :position 100 100)
+      (: :give :useable 64 64))
+  (-> (Concord.entity world)
+      (: :give :drawable image)
+      (: :give :position -100 100)
+      (: :give :useable 64 64))
+  (-> (Concord.entity world)
+      (: :give :drawable image)
+      (: :give :position 100 -100)
+      (: :give :useable 64 64))
+  (-> (Concord.entity world)
+      (: :give :drawable image)
+      (: :give :position -100 -100)
+      (: :give :useable 64 64)))
 
 
 ;;; Game state
@@ -32,34 +53,26 @@
             S.animation)
 
            (local player (require :player))
-           (local gumdrop
-                  (love.graphics.newImage "assets/gumdrop.png"))
+           (local gumdrop (new-image "assets/gumdrop.png"))
+           (local snow (new-image "assets/snow.png"))
+           (local greebles (love.graphics.newSpriteBatch snow max-greebles))
 
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable)
-           ;;     (: :give :position 0 0))
+           ;; Set Grebles
+           (for [_ 1 max-greebles]
+             (let [gx (* world-radius (nrand))
+                   gy (* world-radius (nrand))]
+               ;; (print (.. "G: " gx ", " gy))
+               (greebles:add gx gy)))
+
            (-> (Concord.entity world)
-               (: :give :drawable gumdrop)
-               (: :give :position 100 100)
-               (: :give :useable 64 64))
-           (-> (Concord.entity world)
-               (: :give :drawable gumdrop)
-               (: :give :position -100 100)
-               (: :give :useable 64 64))
-           (-> (Concord.entity world)
-               (: :give :drawable gumdrop)
-               (: :give :position 100 -100)
-               (: :give :useable 64 64))
-           (-> (Concord.entity world)
-               (: :give :drawable gumdrop)
-               (: :give :position -100 -100)
-               (: :give :useable 64 64))
+               (: :give :position 0 0)
+               (: :give :drawable greebles))
+
+           (test-resources world gumdrop)
+
 
            (-> (Concord.entity world)
                (: :give :resource-spawner :gumdrop))
-
-           (for [_ 1 300]
-             (-> (Concord.entity world)))
 
            (-> (Concord.entity world)
                (: :give :position 0 0)
