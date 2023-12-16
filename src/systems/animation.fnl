@@ -1,5 +1,7 @@
 (import-macros {: incf} :sample-macros)
+(import-macros {: with-camera} :lib.macros)
 (local Concord (require :lib.concord))
+(local gdraw love.graphics.draw)
 
 
 (fn inc-wrap [index wrap]
@@ -26,18 +28,15 @@
 
 (fn animation.draw [self]
   (let [world (self:getWorld)
-        camera (world:getResource :camera)
-        outline (. (world:getResource :shaders) :outline)
-        gdraw love.graphics.draw]
-    (camera:attach)
-    (each [_ e (ipairs self.pool)]
-      (let [state e.animation.state
-            frame e.animation.frame
-            index (. e.animation.graph state frame :frame)
-            quad (. e.animation.graph state frame :quad)
-            image e.animation.image]
-        (gdraw image quad e.position.x e.position.y 0 1 1 24 32)))
-    (camera:detach)))
+        camera (world:getResource :camera)]
+    (with-camera camera
+      (each [_ e (ipairs self.pool)]
+        (let [state e.animation.state
+              frame e.animation.frame
+              index (. e.animation.graph state frame :frame)
+              quad (. e.animation.graph state frame :quad)
+              image e.animation.image]
+          (gdraw image quad e.position.x e.position.y 0 1 1 24 32))))))
 
 
 animation

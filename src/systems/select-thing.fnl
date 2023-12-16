@@ -27,7 +27,14 @@
     (ray-in-rec? px py lx ly tx ty bx by)))
 
 
-;; (fn closer? [e1 e2 player])
+(fn closer [e1 e2 pl]
+  (if (= e1 nil) e2
+      (= e2 nil) e1
+      (let [d1 (vec.dist2 e1.position.x e1.position.y
+                          pl.position.x pl.position.y)
+            d2 (vec.dist2 e2.position.x e2.position.y
+                          pl.position.x pl.position.y)]
+        (if (<= d1 d2) e1 e2))))
 
 
 (local select-thing (Concord.system {:pool [:useable :position]
@@ -36,11 +43,12 @@
 
 (fn select-thing.update [self dt]
   (let [player (. self.players 1)]
-    ;; (var selected)
+    (var selected nil)
     (each [_ e (ipairs self.pool)]
       (set e.useable.selected false)
       (when (intersects? e player)
-        (set e.useable.selected true)))))
+        (set selected (closer selected e player))))
+    (if selected (set selected.useable.selected true))))
 
 
 select-thing

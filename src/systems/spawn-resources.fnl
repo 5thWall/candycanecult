@@ -11,12 +11,10 @@
     ;; TODO: Spawn a resource by kind away from any collideable
     (local (rx ry) (values (* max-x (love.math.randomNormal))
                            (* max-y (love.math.randomNormal))))
-    (print (.. "Spawning " kind " at " rx ", " ry))
     (-> (Concord.entity world)
         (: :give :resource kind)
         (: :give :position rx ry)
         (: :give :drawable img)
-        ;; (: :give :drawable)
         (: :give :useable 64 64))))
 
 (fn cooldown [spawner]
@@ -34,8 +32,7 @@
        (Concord.system {:pool [:resource-spawner]
                         :resources [:resource :position]
                         ;; :collideable [:collideable :position]
-                        }
-                       ))
+                        }))
 
 
 (fn spawn-resources.update [self dt]
@@ -47,5 +44,6 @@
         (local res-count (count-resource self.resources spawner.kind))
         (if (< res-count spawner.resource-limit)
             (spawn-resource spawner self.collideable (self:getWorld)))))))
+
 
 spawn-resources

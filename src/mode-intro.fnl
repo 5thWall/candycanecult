@@ -38,25 +38,28 @@
            ;; (-> (Concord.entity world)
            ;;     (: :give :drawable)
            ;;     (: :give :position 0 0))
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position 100 100)
-           ;;     (: :give :useable 64 64))
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position -100 100)
-           ;;     (: :give :useable 64 64))
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position 100 -100)
-           ;;     (: :give :useable 64 64))
-           ;; (-> (Concord.entity world)
-           ;;     (: :give :drawable gumdrop)
-           ;;     (: :give :position -100 -100)
-           ;;     (: :give :useable 64 64))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position 100 100)
+               (: :give :useable 64 64))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position -100 100)
+               (: :give :useable 64 64))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position 100 -100)
+               (: :give :useable 64 64))
+           (-> (Concord.entity world)
+               (: :give :drawable gumdrop)
+               (: :give :position -100 -100)
+               (: :give :useable 64 64))
 
            (-> (Concord.entity world)
                (: :give :resource-spawner :gumdrop))
+
+           (for [_ 1 300]
+             (-> (Concord.entity world)))
 
            (-> (Concord.entity world)
                (: :give :position 0 0)
@@ -76,12 +79,15 @@
  :update (fn update [self dt] (self.world:emit "update" dt))
 
 
- :draw (fn draw [self] (self.world:emit "draw"))
+ :draw (fn draw [self]
+         (love.graphics.setBackgroundColor 1 1 1 1)
+         (self.world:emit "draw"))
 
 
  :keypressed (fn keypressed [self key _scancode _repeat?]
                (if (= key :escape) (love.event.quit 0))
                )
+
 
  :mousemoved (fn mousemoved [self x y dx dy touch?]
                (self.world:emit "mousemoved" x y dx dy touch?))
