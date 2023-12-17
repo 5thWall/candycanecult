@@ -1,8 +1,8 @@
 (fn incf [value ?by]
-  `(set ,value (+ ,value (or ,?by 1))))
+  `(set ,value (+ ,value ,(or ?by 1))))
 
 (fn decf [value ?by]
-  `(set ,value (- ,value (or ,?by 1))))
+  `(set ,value (- ,value ,(or ?by 1))))
 
 (fn with [t keys ?body]
   `(let [,keys ,t]
