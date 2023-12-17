@@ -32,6 +32,15 @@
       (: :give :position -100 -100)
       (: :give :useable 64 64)))
 
+;; (local actions
+;;        {:noop (fn [& _] true)
+;;         :mine (fn [entity _args]
+;;                 (decf entity.resource.health)
+;;                 (when (<= 0 entity.resource.health)
+;;                   (world:removeEntity entity)
+;;                   (world:addEntity)))
+;;         })
+
 
 ;;; Game state
 {:world (Concord.world)
@@ -55,26 +64,25 @@
            (local player (require :player))
            (local gumdrop (new-image "assets/gumdrop.png"))
            (local snow (new-image "assets/snow.png"))
-           (local greebles (love.graphics.newSpriteBatch snow max-greebles))
 
-           ;; Set Grebles
-           (for [_ 1 max-greebles]
-             (let [gx (* world-radius (nrand))
-                   gy (* world-radius (nrand))]
-               ;; (print (.. "G: " gx ", " gy))
-               (greebles:add gx gy)))
+           ;; Set Greebles
+           (local greebles
+             (faccumulate [batch (love.graphics.newSpriteBatch snow max-greebles) _ 1 max-greebles]
+               (let [gx (* world-radius (nrand))
+                     gy (* world-radius (nrand))]
+                 (batch:add gx gy) batch)))
 
-           (-> (Concord.entity world)
+           (-> (world:newEntity)
                (: :give :position 0 0)
                (: :give :drawable greebles))
 
            (test-resources world gumdrop)
 
 
-           (-> (Concord.entity world)
+           (-> (world:newEntity)
                (: :give :resource-spawner :gumdrop))
 
-           (-> (Concord.entity world)
+           (-> (world:newEntity)
                (: :give :position 0 0)
                (: :give :animation :south 1 0.25 player.animation player.sprite-sheet)
                (: :give :player))
@@ -89,19 +97,27 @@
            ))
 
 
- :update (fn update [self dt] (self.world:emit "update" dt))
+ :update
+ (fn update [self dt] (self.world:emit :update dt))
 
 
- :draw (fn draw [self]
-         (love.graphics.setBackgroundColor 1 1 1 1)
-         (self.world:emit "draw"))
+ :draw
+ (fn draw [self]
+   (love.graphics.setBackgroundColor 1 1 1)
+   (self.world:emit :draw))
 
 
- :keypressed (fn keypressed [self key _scancode _repeat?]
-               (if (= key :escape) (love.event.quit 0))
-               )
+ :keypressed
+ (fn keypressed [self key _scancode _repeat?]
+   (if (= key :escape) (love.event.quit 0)))
 
 
- :mousemoved (fn mousemoved [self x y dx dy touch?]
-               (self.world:emit "mousemoved" x y dx dy touch?))
+ :mousemoved
+ (fn mousemoved [self x y dx dy touch?]
+   (self.world:emit :mousemoved x y dx dy touch?))
+
+
+ :mousepressed
+ (fn mousepressed [self x y button touch? presses]
+   (self.world:emit :mousepressed x y button touch? presses))
  }
