@@ -1,6 +1,7 @@
 (local Concord (require :lib.concord))
 (local vec (require :lib.vector-light))
 (local (min max) (values math.min math.max))
+(import-macros {: new-system} :lib.macros)
 
 
 ;; From aek: https://www.lexaloffle.com/bbs/?tid=39127
@@ -36,19 +37,20 @@
                           pl.position.x pl.position.y)]
         (if (<= d1 d2) e1 e2))))
 
-
-(local select-thing (Concord.system {:pool [:useable :position]
-                                     :players [:player]}))
-
-
-(fn select-thing.update [self dt]
-  (let [player (. self.players 1)]
-    (var selected nil)
-    (each [_ e (ipairs self.pool)]
-      (set e.useable.selected false)
-      (when (intersects? e player)
-        (set selected (closer selected e player))))
-    (if selected (set selected.useable.selected true))))
+(new-system ;; select-thing
+ "Mark the closest thing the player is pointing at as selected"
 
 
-select-thing
+ {:pool [:useable :position]
+  :players [:player]}
+
+
+ {:update
+  (fn select-thing-update [self dt]
+    (let [player (. self.players 1)]
+      (var selected nil)
+      (each [_ e (ipairs self.pool)]
+        (set e.useable.selected false)
+        (when (intersects? e player)
+          (set selected (closer selected e player))))
+      (if selected (set selected.useable.selected true))))})

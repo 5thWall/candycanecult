@@ -1,5 +1,5 @@
 (local Concord (require :lib.concord))
-(import-macros {: with-camera : with-shader} :lib.macros)
+(import-macros {: new-system : with-camera : with-shader} :lib.macros)
 
 
 (fn get-img [world image]
@@ -25,21 +25,19 @@
       (draw-circle entity.position)))
 
 
-(local draw (Concord.system {:pool [:position :drawable]}))
+(new-system ;draw
+ {:pool [:position :drawable]}
 
-
-(fn draw.draw [self]
-  (let [world (self:getWorld)
-        camera (world:getResource :camera)
-        shader (. (world:getResource :shaders) :outline)]
-    (with-camera camera
-      (each [_ e (ipairs self.pool)]
-        (draw-entity e)
-        (when (?. e :useable :selected)
-          (with-shader shader
-            (shader:send "stepSize" [(/ 3 e.useable.width)
-                                     (/ 3 e.useable.height)])
-            (draw-entity e)))))))
-
-
-draw
+ {:draw
+  (fn draw [self]
+    (let [world (self:getWorld)
+          camera (world:getResource :camera)
+          shader (. (world:getResource :shaders) :outline)]
+      (with-camera camera
+        (each [_ e (ipairs self.pool)]
+          (draw-entity e)
+          (when (?. e :useable :selected)
+            (with-shader shader
+              (shader:send "stepSize" [(/ 3 e.useable.width)
+                                       (/ 3 e.useable.height)])
+              (draw-entity e)))))))})

@@ -1,5 +1,5 @@
 (import-macros {: incf} :sample-macros)
-(import-macros {: with-camera} :lib.macros)
+(import-macros {: with-camera : new-system} :lib.macros)
 (local Concord (require :lib.concord))
 (local gdraw love.graphics.draw)
 
@@ -12,31 +12,32 @@
   (inc-wrap index (length table)))
 
 
-(local animation (Concord.system {:pool [:position :animation]}))
+(new-system ;animation
+ "Updates animations according to their configuration
+  and draws the animation frame"
 
+ {:pool [:position :animation]}
 
-(fn animation.update [self dt]
-  (each [_ e (ipairs self.pool)]
-    (let [frames (. e.animation.graph e.animation.state)
-          frame (. frames e.animation.frame)]
-      (incf frame.elapsed dt)
-      (when (> frame.elapsed e.animation.speed)
-        (let [new-frame (next-index e.animation.frame frames)]
-          (set e.animation.frame new-frame))
-        (set frame.elapsed 0)))))
+ {:update
+  (fn animation-update [self dt]
+    (each [_ e (ipairs self.pool)]
+      (let [frames (. e.animation.graph e.animation.state)
+            frame (. frames e.animation.frame)]
+        (incf frame.elapsed dt)
+        (when (> frame.elapsed e.animation.speed)
+          (let [new-frame (next-index e.animation.frame frames)]
+            (set e.animation.frame new-frame))
+          (set frame.elapsed 0)))))
 
-
-(fn animation.draw [self]
-  (let [world (self:getWorld)
-        camera (world:getResource :camera)]
-    (with-camera camera
-      (each [_ e (ipairs self.pool)]
-        (let [state e.animation.state
-              frame e.animation.frame
-              index (. e.animation.graph state frame :frame)
-              quad (. e.animation.graph state frame :quad)
-              image e.animation.image]
-          (gdraw image quad e.position.x e.position.y 0 1 1 24 32))))))
-
-
-animation
+  :draw
+  (fn animation-draw [self]
+    (let [world (self:getWorld)
+          camera (world:getResource :camera)]
+      (with-camera camera
+        (each [_ e (ipairs self.pool)]
+          (let [state e.animation.state
+                frame e.animation.frame
+                index (. e.animation.graph state frame :frame)
+                quad (. e.animation.graph state frame :quad)
+                image e.animation.image]
+            (gdraw image quad e.position.x e.position.y 0 1 1 24 32))))))})

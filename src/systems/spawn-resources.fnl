@@ -1,4 +1,5 @@
 (import-macros {: decf} :sample-macros)
+(import-macros {: new-system} :lib.macros)
 (local Concord (require :lib.concord))
 
 (fn spawn-resource [spawner collideable world]
@@ -28,22 +29,21 @@
       0))
 
 
-(local spawn-resources
-       (Concord.system {:pool [:resource-spawner]
-                        :resources [:resource :position]
-                        ;; :collideable [:collideable :position]
-                        }))
+(new-system ;spawn-resources
+ "Spawns new resources around the map"
 
+ {:pool [:resource-spawner]
+  :resources [:resource :position]
+  ;; :collideable [:collideable :position]
+  }
 
-(fn spawn-resources.update [self dt]
-  (each [_ e (ipairs self.pool)]
-    (let [spawner e.resource-spawner]
-      (decf spawner.cooldown dt)
-      (when (<= spawner.cooldown 0)
-        (set spawner.cooldown (cooldown spawner))
-        (local res-count (count-resource self.resources spawner.kind))
-        (if (< res-count spawner.resource-limit)
-            (spawn-resource spawner self.collideable (self:getWorld)))))))
-
-
-spawn-resources
+ {:update
+  (fn update [self dt]
+    (each [_ e (ipairs self.pool)]
+      (let [spawner e.resource-spawner]
+        (decf spawner.cooldown dt)
+        (when (<= spawner.cooldown 0)
+          (set spawner.cooldown (cooldown spawner))
+          (local res-count (count-resource self.resources spawner.kind))
+          (if (< res-count spawner.resource-limit)
+              (spawn-resource spawner self.collideable (self:getWorld)))))))})
