@@ -1,3 +1,5 @@
+;;;; Utility Macros
+;;;; https://gitlab.com/alexjgriffith/min-love2d-fennel
 (fn incf [value ?by]
   `(set ,value (+ ,value ,(or ?by 1))))
 

@@ -1,5 +1,6 @@
-(import-macros {: incf} :sample-macros)
-(import-macros {: with-camera : new-system} :lib.macros)
+(import-macros {: incf} :macros.util)
+(import-macros With :macros.with)
+(import-macros {: new-system} :macros.ecs)
 (local Concord (require :lib.concord))
 (local gdraw love.graphics.draw)
 
@@ -33,7 +34,7 @@
   (fn animation-draw [self]
     (let [world (self:getWorld)
           camera (world:getResource :camera)]
-      (with-camera camera
+      (With.camera camera
         (each [_ e (ipairs self.pool)]
           (let [state e.animation.state
                 frame e.animation.frame

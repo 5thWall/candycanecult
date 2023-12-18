@@ -1,5 +1,5 @@
-(import-macros {: decf} :sample-macros)
-(import-macros {: new-system} :lib.macros)
+(import-macros {: decf} :macros.util)
+(import-macros {: new-system} :macros.ecs)
 (local Concord (require :lib.concord))
 
 (fn spawn-resource [spawner collideable world]

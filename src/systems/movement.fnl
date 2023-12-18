@@ -1,5 +1,5 @@
-(import-macros {: incf} :sample-macros)
-(import-macros {: new-system} :lib.macros)
+(import-macros {: incf} :macros.util)
+(import-macros {: new-system} :macros.ecs)
 (local Concord (require :lib.concord))
 
 

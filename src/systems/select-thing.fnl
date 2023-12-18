@@ -1,7 +1,7 @@
 (local Concord (require :lib.concord))
 (local vec (require :lib.vector-light))
 (local (min max) (values math.min math.max))
-(import-macros {: new-system} :lib.macros)
+(import-macros {: new-system} :macros.ecs)
 
 
 ;; From aek: https://www.lexaloffle.com/bbs/?tid=39127

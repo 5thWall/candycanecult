@@ -1,5 +1,5 @@
-(import-macros {: incf : decf} :sample-macros)
-(import-macros {: new-system} :lib.macros)
+(import-macros {: incf : decf} :macros.util)
+(import-macros {: new-system} :macros.ecs)
 (local Concord (require :lib.concord))
 (local vec (require :lib.vector-light))
 

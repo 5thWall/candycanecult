@@ -1,7 +1,7 @@
 ;;;; Candy Cane Cult
 ;;;; Entry for the Weak Sauce Dec '23 Jam
 
-(import-macros {: incf : decf} :sample-macros)
+(import-macros {: incf : decf} :macros.util)
 (local Concord (require :lib.concord))
 (local Camera (require :lib.camera))
 (local C (require :components))

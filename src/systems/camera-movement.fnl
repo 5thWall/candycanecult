@@ -1,5 +1,5 @@
 (local Concord (require :lib.concord))
-(import-macros {: new-system} :lib.macros)
+(import-macros {: new-system} :macros.ecs)
 
 
 (new-system ;camera-movement

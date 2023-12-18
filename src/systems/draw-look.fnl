@@ -1,6 +1,7 @@
 (local Concord (require :lib.concord))
 (local vec (require :lib.vector-light))
-(import-macros {: new-system : with-camera : with-color} :lib.macros)
+(import-macros With :macros.with)
+(import-macros {: new-system} :macros.ecs)
 
 
 (new-system ;draw-look
@@ -14,10 +15,10 @@
           camera (world:getResource :camera)
           player (. self.players 1)]
 
-      (with-camera camera
+      (With.camera camera
         (let [x player.position.x
               y player.position.y
               reach player.player.reach
               theta player.player.look-angle
               (lx ly) (vec.add x y (vec.fromPolar theta reach))]
-          (with-color 0 0 0 1 (love.graphics.line x y lx ly))))))})
+          (With.color 0 0 0 1 (love.graphics.line x y lx ly))))))})
