@@ -41,9 +41,9 @@ love: $(LOVEFILE)
 
 # platform-specific distributables
 
-REL=$(PWD)/buildtools/love-release.sh # https://p.hagelb.org/love-release.sh
-FLAGS=-a "$(AUTHOR)" --description $(DESCRIPTION) \
-	--love $(LOVE_VERSION) --url $(URL) --version $(VERSION) --lovefile $(LOVEFILE)
+REL=love-release 
+FLAGS=--author "$(AUTHOR)" --desc $(DESCRIPTION) \
+	--love $(LOVE_VERSION) --url $(URL) -v $(VERSION) -lovefile $(LOVEFILE)
 
 releases/$(NAME)-$(VERSION)-x86_64.AppImage: $(LOVEFILE)
 	cd buildtools/appimage && ./build.sh $(LOVE_VERSION) $(PWD)/$(LOVEFILE)
