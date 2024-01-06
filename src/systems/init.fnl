@@ -1,4 +1,5 @@
 {
+ :action (require (.. ... ".action"))
  :animation (require (.. ... ".animation"))
  :camera-movement (require (.. ... ".camera-movement"))
  :draw (require (.. ... ".draw"))

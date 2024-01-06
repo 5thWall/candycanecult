@@ -1,7 +1,7 @@
 ;;;; Candy Cane Cult
 ;;;; Entry for the Weak Sauce Dec '23 Jam
 
-(import-macros {: incf : decf} :macros.util)
+(import-macros {: incf : decf : unless} :macros.util)
 (local Concord (require :lib.concord))
 (local Camera (require :lib.camera))
 (local C (require :components))
@@ -17,29 +17,24 @@
 (fn test-resources [world image]
   (-> (Concord.entity world)
       (: :give :drawable image)
+      (: :give :resource :gumdrop)
       (: :give :position 100 100)
-      (: :give :useable 64 64))
+      (: :give :useable 64 64 :mine))
   (-> (Concord.entity world)
       (: :give :drawable image)
+      (: :give :resource :gumdrop)
       (: :give :position -100 100)
-      (: :give :useable 64 64))
+      (: :give :useable 64 64 :mine))
   (-> (Concord.entity world)
       (: :give :drawable image)
+      (: :give :resource :gumdrop)
       (: :give :position 100 -100)
-      (: :give :useable 64 64))
+      (: :give :useable 64 64 :mine))
   (-> (Concord.entity world)
       (: :give :drawable image)
+      (: :give :resource :gumdrop)
       (: :give :position -100 -100)
-      (: :give :useable 64 64)))
-
-;; (local actions
-;;        {:noop (fn [& _] true)
-;;         :mine (fn [entity _args]
-;;                 (decf entity.resource.health)
-;;                 (when (<= 0 entity.resource.health)
-;;                   (world:removeEntity entity)
-;;                   (world:addEntity)))
-;;         })
+      (: :give :useable 64 64 :mine)))
 
 
 ;;; Game state
@@ -55,6 +50,7 @@
             S.movement
             S.player-input
             S.select-thing
+            S.action
             S.spawn-resources
             S.camera-movement
             S.draw
@@ -64,6 +60,21 @@
            (local player (require :player))
            (local gumdrop (new-image "assets/gumdrop.png"))
            (local snow (new-image "assets/snow.png"))
+           (local gumdrop-piece (new-image "assets/gumdrop-piece.png"))
+
+           (local actions
+                  {:noop (fn [& _] true)
+                   :mine (fn [entity _args]
+                           (entity:destroy)
+                           (-> (world:newEntity)
+                               (: :give :position entity.position.x entity.position.y)
+                               (: :give :drawable gumdrop-piece)
+                               (: :give :useable 64 64 :pickup)))
+                   :pickup (fn [entity player]
+                             (unless player.player.held
+                                     (entity:remove :position)
+                                     (set player.player.held entity)))
+                   })
 
            ;; Set Greebles
            (local greebles
@@ -94,6 +105,7 @@
            (world:setResource :shaders shaders)
            (world:setResource :camera camera)
            (world:setResource :res-img-map { :gumdrop gumdrop })
+           (world:setResource :actions actions)
            ))
 
 

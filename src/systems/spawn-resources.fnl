@@ -16,7 +16,7 @@
         (: :give :resource kind)
         (: :give :position rx ry)
         (: :give :drawable img)
-        (: :give :useable 64 64))))
+        (: :give :useable 64 64 :mine))))
 
 (fn cooldown [spawner]
   (love.math.random spawner.min-cooldown spawner.max-cooldown))

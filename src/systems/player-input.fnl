@@ -58,5 +58,7 @@
   :mousepressed
   (fn mousepressed [self _x _y button _touch? _presses]
     (let [world (self:getWorld)
-          actions [:player-action :player-alt-action]]
-      (world:emit (or (. actions button) :noop))))})
+          actions [:player-action :player-alt-action]
+          action (or (. actions button) :noop)]
+      (print (.. "doing: " action))
+      (world:emit action)))})
